@@ -26,6 +26,10 @@
     .card:active { transform: scale(0.98); border-color: #4fc3f7; }
     .card h3 { font-size: 16px; margin-bottom: 4px; }
     .card p { font-size: 12px; color: #888; }
+    .card .tag {
+      display: inline-block; background: #4fc3f720; color: #4fc3f7;
+      font-size: 11px; padding: 3px 8px; border-radius: 6px; margin-top: 8px;
+    }
     .footer { margin-top: 40px; color: #555; font-size: 12px; text-align: center; }
   </style>
 </head>
@@ -38,10 +42,12 @@
     <a class="card" href="webgl/01-clustered-lighting-city.html">
       <h3>🌃 Clustered Lighting City</h3>
       <p>50 dynamic colored point lights · Procedural city</p>
+      <span class="tag">Lights · OrbitControls</span>
     </a>
     <a class="card" href="webgl/02-neon-rings.html">
       <h3>💫 Neon Rings</h3>
       <p>Torus knots with emissive neon materials</p>
+      <span class="tag">Animation · Glow</span>
     </a>
   </div>
   
@@ -50,13 +56,20 @@
     <a class="card" href="webgpu/01-clustered-lighting-city.html">
       <h3>🌃 Clustered Lighting City</h3>
       <p>WebGPU renderer · Chrome 113+ / Edge 113+</p>
+      <span class="tag">WebGPU</span>
     </a>
     <a class="card" href="webgpu/02-neon-rings.html">
       <h3>💫 Neon Rings</h3>
       <p>WebGPU renderer · Chrome 113+ / Edge 113+</p>
+      <span class="tag">WebGPU</span>
+    </a>
+    <a class="card" href="webgpu/game/">
+      <h3>🎮 Rapier Physics Game</h3>
+      <p>Third-person platformer · WASD + Space controls</p>
+      <span class="tag">WebGPU · Rapier · Game</span>
     </a>
   </div>
   
-  <p class="footer">Built with Three.js r185<br>WebGL: iOS Safari, Chrome, all browsers<br>WebGPU: Chrome 113+, Edge 113+</p>
+  <p class="footer">Built with Three.js r185<br>WebGL: all browsers · WebGPU: Chrome 113+</p>
 </body>
 </html>
