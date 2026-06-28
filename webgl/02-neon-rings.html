@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js r185 — Neon Rings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #050510; overflow: hidden; }
+    canvas { display: block; }
+    #hud {
+      position: fixed; bottom: 20px; left: 20px; z-index: 100;
+      background: rgba(0,0,0,0.75); padding: 12px 16px; border-radius: 8px;
+      font: 13px/1.6 -apple-system, monospace; color: #aaa;
+      border: 1px solid rgba(255,255,255,0.08); pointer-events: none;
+    }
+    #hud b { color: #4fc3f7; }
+  </style>
+</head>
+<body>
+<div id="hud">
+  <b>Three.js r185</b> — Neon Torus Knots<br>
+  <span style="color:#ffa726">Drag</span> orbit · <span style="color:#ffa726">Scroll</span> zoom
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.min.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050510);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(0, 4, 10);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+
+// Ambient
+scene.add(new THREE.AmbientLight(0x202040, 0.3));
+
+// Create torus knots with neon materials
+const colors = [0x4fc3f7, 0xff7043, 0x66bb6a, 0xba68c8, 0xffd54f];
+const knots = [];
+
+for (let i = 0; i < 5; i++) {
+  const mat = new THREE.MeshStandardMaterial({
+    color: colors[i],
+    emissive: colors[i],
+    emissiveIntensity: 0.6,
+    metalness: 0.8,
+    roughness: 0.15,
+  });
+  const knot = new THREE.Mesh(new THREE.TorusKnotGeometry(1, 0.3, 128, 32), mat);
+  const angle = (i / 5) * Math.PI * 2;
+  knot.position.set(Math.cos(angle) * 3, 0, Math.sin(angle) * 3);
+  scene.add(knot);
+  knots.push(knot);
+
+  // Point light at each knot
+  const light = new THREE.PointLight(colors[i], 3, 10);
+  light.position.copy(knot.position);
+  scene.add(light);
+}
+
+// Central glow
+const centralGeo = new THREE.SphereGeometry(0.3, 32, 32);
+const centralMat = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  emissive: 0xffffff,
+  emissiveIntensity: 2,
+});
+const central = new THREE.Mesh(centralGeo, centralMat);
+scene.add(central);
+const centralLight = new THREE.PointLight(0xffffff, 5, 15);
+scene.add(centralLight);
+
+// Ground
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(40, 40),
+  new THREE.MeshStandardMaterial({ color: 0x111122, roughness: 0.5, metalness: 0.4 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -2;
+scene.add(ground);
+
+// Animate
+function animate() {
+  requestAnimationFrame(animate);
+  const t = performance.now() * 0.001;
+
+  knots.forEach((k, i) => {
+    const angle = (i / 5) * Math.PI * 2 + t * 0.3;
+    k.position.x = Math.cos(angle) * 3;
+    k.position.z = Math.sin(angle) * 3;
+    k.position.y = Math.sin(t * 0.5 + i) * 0.5;
+    k.rotation.x = t * 0.4;
+    k.rotation.y = t * 0.6 + i;
+    // Update light position
+    k.children.forEach(c => { if (c.isLight) c.position.set(0, 0, 0); });
+  });
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
